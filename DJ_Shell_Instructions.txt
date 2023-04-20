@@ -1,0 +1,104 @@
+1. Создание двух пользователей (с помощью метода User.objects.create_user('username')).
+
+User.objects.create_user('Peter')
+User.objects.create_user('Emma')
+=====================================2=================
+2. Создание двух объектов модели Author, связанных с пользователями.
+
+u1 = User.objects.create_user(username='Donald')
+u2 = User.objects.create_user(username='Melinda')
+
+Author.objects.create(authorUser=u1)
+Author.objects.create(authorUser=u2)
+=====================================3=================
+3. Добавить 4 категории в модель Category.
+
+Category.objects.create(name='Money')
+Category.objects.create(name='Health')
+Category.objects.create(name='Books')
+Category.objects.create(name='Travel')
+=====================================4=================
+4. Добавить 2 статьи и 1 новость.
+
+author1 = Author.objects.get(id=1)
+author2 = Author.objects.get(id=2)
+
+Post.objects.create(author=author1, categoryType='AR', title='Travel Guide', text='We all like to travel.')
+Post.objects.create(author=author1, categoryType='AR', title='Books Advice', text='Read books all the time.')
+Post.objects.create(author=author2, categoryType='NW', title='Latest News', text='Bill Gates invested $10 billions in new vaccine.')
+=====================================5=================
+5. Присвоить статьям/новостям категории (минимум у одной статьи/новости должно быть не менее 2 категорий).
+
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=4))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=3))
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=1), Category.objects.get(id=2))
+Post.objects.get(id=3).postCategory.add(Category.objects.get(id=1), Category.objects.get(id=2))
+=====================================6=================
+6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=2).authorUser, text='i like this article')
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=1).authorUser, text='very interesting')
+Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=User.objects.get(id=1), text='vaccines are good')
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=User.objects.get(id=2), text='books are boring')
+=====================================7=================
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+
+Post.objects.get(id=1).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).dislike()
+
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=2).like()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).dislike()
+Comment.objects.get(id=4).dislike()
+
+Post.objects.get(id=1).rating
+Post.objects.get(id=2).rating
+Post.objects.get(id=3).rating
+
+Comment.objects.get(id=1).rating
+Comment.objects.get(id=2).rating
+Comment.objects.get(id=3).rating
+Comment.objects.get(id=4).rating
+=====================================8=================
+8. Обновить рейтинги пользователей.
+
+Author.objects.get(id=1)
+a1 = Author.objects.get(id=1)
+a1.update_rating()
+a1.ratingAuthor
+
+a2 = Author.objects.get(id=2)
+a2.update_rating()
+a2.ratingAuthor
+=====================================9=================
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+abest = Author.objects.order_by('-ratingAuthor')[:1]
+abest[0].authorUser.username
+abest[0].ratingAuthor
+====================================10=================
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+
+pbest = Post.objects.order_by('-rating')[:1]
+pbest[0].dateCreation.strftime("%m/%d/%Y, %H:%M:%S")
+pbest[0].author.authorUser.username
+pbest[0].rating
+pbest[0].title
+pbest[0].preview()
+====================================11=================
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+cbest = Comment.objects.filter(commentPost=Post.objects.order_by('-rating')[0])
+
+for i in cbest:
+	i.dateCreation.strftime("%m/%d/%Y, %H:%M:%S")
+	i.commentUser
+	i.rating
+	i.text
+	print('-----------------------')
+========================================================
